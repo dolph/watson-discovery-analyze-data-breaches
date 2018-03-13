@@ -18,6 +18,8 @@
 require('metrics-tracker-client').track();
 
 const queryBuilder = require('./query-builder');
+const vcapServices = require('vcap_services');
+const discoveryCredentials = vcapServices.getCredentials('discovery');
 const WatsonDiscoverySetup = require('./lib/watson-discovery-setup');
 const DiscoveryV1 = require('watson-developer-cloud/discovery/v1');
 const DEFAULT_COLLECTION_NAME = 'data-breaches';
@@ -26,7 +28,9 @@ var environment_id;
 var collection_id;
 
 const discovery = new DiscoveryV1({
-  // uname/pwd will be pulled in from VCAP_SERVICES or .env
+  url: discoveryCredentials.url,
+  password: discoveryCredentials.password,
+  username: discoveryCredentials.username,
   version_date: '2017-08-01',
   qs: { aggregation: `[${queryBuilder.aggregations.join(',')}]` },
 });
